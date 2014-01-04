@@ -35,23 +35,12 @@ func main() {
 
 		fmt.Printf("Account#%d: %s\n", account_id, screen_name)
 
-		dup_query := "SELECT id FROM accounts WHERE screen_name = $1"
-		dup_rows, err := db.Query(dup_query, screen_name)
+		screen_name = fmt.Sprintf("_dup_%s", screen_name)
+
+		dup_query := "INSERT INTO accounts (screen_name) VALUES($1)"
+		_, err = db.Query(dup_query, screen_name)
 		if err != nil {
 			log.Fatal(err)
-		}
-
-		for dup_rows.Next() {
-			var (
-				dup_account_id int
-			)
-
-			err := dup_rows.Scan(&dup_account_id)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmt.Printf("Duplicate: %d\n", dup_account_id)
 		}
 	}
 
